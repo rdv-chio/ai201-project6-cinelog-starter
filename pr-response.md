@@ -44,7 +44,30 @@ I utilized Gemini as an advanced peer reviewer and technical sanity checker. Spe
 
 ---
 
+### Feature Overview
+This pull request integrates the Watchlist subsystem into CineLog, allowing active users to track films they intend to watch, separate from their historical logs. It includes custom endpoints for adding, listing, and revoking films from a personalized user dashboard.
+
+### Core Design Decisions
+1. **Default Visibility (`public=True`):** Set to open public access to bolster CineLog's community discovery features, while exposing a flexible boolean argument for absolute privacy control.
+2. **Chronological Sort Order:** Items return sorted via `date_added DESC` to capture user engagement momentum and present fresh lookups immediately.
+
+### Manual End-to-End Testing Steps
+1. Boot the backend server locally using `python -m flask run`.
+2. Seed a test user and a valid film entity through the test environment (via pytest).
+3. Issue a `POST` request to `/watchlist/<user_id>/add` passing a payload JSON of `{"film_id": "<valid_uuid>"}`. Verify an HTTP `201 Created` status is returned.
+4. Re-issue the exact same payload request and assert that an HTTP `409 Conflict` error is returned, confirming deduplication acts correctly.
+
 ## 📈 Git History Validation
 ```text
-* 374ec05 - fix: add deduplication check to prevent duplicate watchlist entries
-* 141d16d - fix: rename save_to_watchlist to add_to_watchlist per naming convention
+(ai201) rociodv@WIN-MU9C0LJD9CM:~/code/ai201-project6-cinelog-starter$ git log --oneline
+38717d5 (HEAD -> feature/watchlist) docs: add pr-response.md with visibility and sort order decisions
+aacd364 fix: update WatchlistEntry film_id to UUID after main branch refactor
+3b27b7c test: add test for nonexistent film_id in add_to_watchlist
+ae3417c fix: add deduplication check to prevent duplicate watchlist entries
+0c855a2 fix: rename save_to_watchlist to add_to_watchlist per naming convention
+670878b fix: update film retrieval method to use db.session.get in collection and watchlist services
+8eec062 added watchlist model and endpoint fixed a bug more changes
+718a9a8 chore: add .gitignore for generated files
+07ca580 (origin/main, origin/HEAD, main) refactor: migrate film IDs from integer to UUID
+014ae54 feat: initial CineLog API with film collection feature
+```
